@@ -201,6 +201,13 @@ func (c *serverConn) OnPacket(r *parser.PacketDecoder) {
 	if s := c.getState(); s != stateNormal && s != stateUpgrading {
 		return
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			if e, ok := r.(error); ok && e.Error() == "send on closed channel" {
+				fmt.Println("recover from send on closed channel")
+			}
+		}
+	}()
 	switch r.Type() {
 	case parser.OPEN:
 	case parser.CLOSE:
