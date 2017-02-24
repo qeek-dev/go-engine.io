@@ -5,7 +5,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/googollee/go-engine.io/message"
+	"github.com/qeek-dev/go-engine.io/message"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
