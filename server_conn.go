@@ -202,10 +202,8 @@ func (c *serverConn) OnPacket(r *parser.PacketDecoder) {
 		return
 	}
 	defer func() {
-		if r := recover(); r != nil {
-			if e, ok := r.(error); ok && e.Error() == "send on closed channel" {
-				fmt.Println("recover from send on closed channel")
-			}
+		if err := recover(); err != nil {
+			fmt.Printf("go-engine.io: defer error in OnPacket: %v \n", err)
 		}
 	}()
 	switch r.Type() {
@@ -244,6 +242,11 @@ func (c *serverConn) OnPacket(r *parser.PacketDecoder) {
 }
 
 func (c *serverConn) OnClose(server transport.Server) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("go-engine.io: defer error in OnClose: %v \n", err)
+		}
+	}()
 	if t := c.getUpgrade(); server == t {
 		c.setUpgrading("", nil)
 		t.Close()
@@ -357,6 +360,11 @@ func (c *serverConn) setState(state state) {
 }
 
 func (c *serverConn) pingLoop() {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("go-engine.io: defer error in pingLoop: %v \n", err)
+		}
+	}()
 	lastPing := time.Now()
 	lastTry := lastPing
 	for {
